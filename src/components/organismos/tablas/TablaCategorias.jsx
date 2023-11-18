@@ -7,20 +7,37 @@ import {
 import Swal from "sweetalert2";
 import { v } from "../../../styles/variables";
 import { useState } from "react";
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { FaArrowsAltV } from "react-icons/fa";
 export function TablaCategorias({
   data,
   SetopenRegistro,
   setdataSelect,
   setAccion,
 }) {
- if(data.length==0) return;
+  if (data?.length == 0) return;
   const [pagina, setPagina] = useState(1);
-  const [porPagina, setPorPagina] = useState(10);
-  const mx = data.length / porPagina;
-  const maximo = mx < 1 ? 1 : mx;
+  const [datas, setData] = useState(data);
+  const [columnFilters, setColumnFilters] = useState([]);
 
   const { eliminarCategoria } = useCategoriasStore();
   function eliminar(p) {
+    if (p.descripcion === "General") {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Esteregistro no se permite modificar ya que es valor por defecto.",
+        footer: '<a href="">...</a>',
+      });
+      return;
+    }
     Swal.fire({
       title: "¿Estás seguro(a)(e)?",
       text: "Una vez eliminado, ¡no podrá recuperar este registro!",
@@ -31,59 +48,162 @@ export function TablaCategorias({
       confirmButtonText: "Si, eliminar",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await eliminarCategoria({ id: p.id, idusuario: p.idusuario });
+        console.log(p);
+        await eliminarCategoria({ id: p.id });
       }
     });
   }
   function editar(data) {
+    if (data.descripcion === "General") {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Esteregistro no se permite modificar ya que es valor por defecto.",
+        footer: '<a href="">...</a>',
+      });
+      return;
+    }
     SetopenRegistro(true);
     setdataSelect(data);
     setAccion("Editar");
   }
+  const columns = [
+    {
+      accessorKey: "descripcion",
+      header: "Descripcion",
+      cell: (info) => <span>{info.getValue()}</span>,
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterStatuses) => {
+        if (filterStatuses.length === 0) return true;
+        const status = row.getValue(columnId);
+        return filterStatuses.includes(status?.id);
+      },
+    },
+
+    {
+      accessorKey: "color",
+      header: "Color",
+      enableSorting: false,
+      cell: (info) => (
+        <td data-title="Color" className="ContentCell">
+          <Colorcontent color={info.getValue()} $alto="25px" $ancho="25px" />
+        </td>
+      ),
+
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterStatuses) => {
+        if (filterStatuses.length === 0) return true;
+        const status = row.getValue(columnId);
+        return filterStatuses.includes(status?.id);
+      },
+    },
+    {
+      accessorKey: "acciones",
+      header: "",
+      enableSorting: false,
+      cell: (info) => (
+        <td data-title="Acciones" className="ContentCell">
+          <ContentAccionesTabla
+            funcionEditar={() => editar(info.row.original)}
+            funcionEliminar={() => eliminar(info.row.original)}
+          />
+        </td>
+      ),
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterStatuses) => {
+        if (filterStatuses.length === 0) return true;
+        const status = row.getValue(columnId);
+        return filterStatuses.includes(status?.id);
+      },
+    },
+  ];
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      columnFilters,
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    columnResizeMode: "onChange",
+    meta: {
+      updateData: (rowIndex, columnId, value) =>
+        setData((prev) =>
+          prev.map((row, index) =>
+            index === rowIndex
+              ? {
+                  ...prev[rowIndex],
+                  [columnId]: value,
+                }
+              : row
+          )
+        ),
+    },
+  });
   return (
     <>
       <Container>
         <table className="responsive-table">
           <thead>
-            <tr>
-              <th scope="col">Descripcion</th>
-              <th scope="col">Icono</th>
-              <th scope="col">Color</th>
-              <th scope="col">Acciones</th>
-            </tr>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.column.columnDef.header}
+                    {header.column.getCanSort() && (
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        <FaArrowsAltV />
+                      </span>
+                    )}
+                    {
+                      {
+                        asc: " 🔼",
+                        desc: " 🔽",
+                      }[header.column.getIsSorted()]
+                    }
+                    <div
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      className={`resizer ${
+                        header.column.getIsResizing() ? "isResizing" : ""
+                      }`}
+                    />
+                  </th>
+                ))}
+              </tr>
+            ))}
           </thead>
           <tbody>
-            {data
-              .slice(
-                (pagina - 1) * porPagina,
-                (pagina - 1) * porPagina + porPagina
-              )
-              .map((item, index) => {
-                return (
-                  <tr key={item.id}>
-                    <th scope="row">{item.descripcion}</th>
-                    <td data-title="Icono">{item.icono}</td>
-                    <td data-title="Color" className="Colordiv">
-                      <div className="ColorContent">
-                        <Colorcontent
-                          color={item.color}
-                          $alto="25px"
-                          $ancho="25px"
-                        />
-                      </div>
-                    </td>
-                    <td data-title="Acciones">
-                      <ContentAccionesTabla
-                        funcionEditar={() => editar(item)}
-                        funcionEliminar={() => eliminar(item)}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
+            {table.getRowModel().rows.map(item=>(
+              
+                <tr key={item.id}>
+                  {item.getVisibleCells().map(cell => (
+                  
+                      <td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    
+                  ))}
+                </tr>
+             
+            ))}
           </tbody>
         </table>
-        <Paginacion pagina={pagina} setPagina={setPagina} maximo={maximo} />
+        <Paginacion
+          table={table}
+          irinicio={() => table.setPageIndex(0)}
+          pagina={table.getState().pagination.pageIndex + 1}
+          setPagina={setPagina}
+          maximo={table.getPageCount()}
+        />
       </Container>
     </>
   );
@@ -97,7 +217,7 @@ const Container = styled.div`
   }
   @media (min-width: ${v.bphomer}) {
     margin: 2em auto;
-    max-width: ${v.bphomer};
+    /* max-width: ${v.bphomer}; */
   }
   .responsive-table {
     width: 100%;
@@ -181,7 +301,7 @@ const Container = styled.div`
         }
         &:nth-of-type(even) {
           @media (min-width: ${v.bpbart}) {
-            background-color: rgba(151, 151, 151, 0.12);
+            background-color: rgba(78, 78, 78, 0.12);
           }
         }
       }
@@ -195,14 +315,17 @@ const Container = styled.div`
           color: ${({ theme }) => theme.text};
         }
       }
-      .Colordiv {
+      .ContentCell {
         text-align: right;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        height: 80px;
+        height: 50px;
+
+        border-bottom: 1px solid rgba(161, 161, 161, 0.32);
         @media (min-width: ${v.bpbart}) {
           justify-content: center;
+          border-bottom: none;
         }
       }
       td {
@@ -230,7 +353,7 @@ const Colorcontent = styled.div`
   justify-content: center;
   min-height: ${(props) => props.$alto};
   width: ${(props) => props.$ancho};
-  display: block;
+  display: flex;
   background-color: ${(props) => props.color};
   border-radius: 50%;
   text-align: center;

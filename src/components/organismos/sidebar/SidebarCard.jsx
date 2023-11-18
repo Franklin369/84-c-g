@@ -1,15 +1,16 @@
 import styled from "styled-components";
-import { v, Btnsave } from "../../../index";
+import { v, Btnsave, useAuthStore } from "../../../index";
 export function SidebarCard() {
+  const { signout } = useAuthStore();
   return (
     <Container>
       <span className="icon">{<v.iconoayuda />}</span>
       <div className="cardContent">
         <div className="circle1"></div>
         <div className="circle2"></div>
-        <h3>Centro de ayuda</h3>
+        <h3>Cerrar sesión</h3>
         <div className="contentBtn">
-          <Btnsave titulo="Contactar" bgcolor="#f8f2fd" />
+          <Btnsave titulo="Cerrar ..." bgcolor="#f8f2fd" funcion={signout} />
         </div>
       </div>
     </Container>
@@ -20,6 +21,7 @@ const Container = styled.div`
   padding: 1rem;
   text-align: center;
   position: relative;
+
 
   .icon {
     position: absolute;

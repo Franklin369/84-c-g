@@ -12,24 +12,18 @@ import {
 import { useForm } from "react-hook-form";
 import { CirclePicker } from "react-color";
 import Emojipicker from "emoji-picker-react";
+import { useEmpresaStore } from "../../../store/EmpresaStore";
 
 export function RegistrarCategorias({ onClose, dataSelect, accion }) {
   const { insertarCategorias, editarCategoria } = useCategoriasStore();
   const { datausuarios } = useUsuariosStore();
-  const [showPicker, setShowPicker] = useState(false);
-  const [emojiselect, setEmojiselect] = useState("😻");
+  const { dataempresa } = useEmpresaStore();
   const [currentColor, setColor] = useState("#F44336");
-
   const [estadoProceso, setEstadoproceso] = useState(false);
   const { tipo } = useOperaciones();
-  function onEmojiClick(emojiObject) {
-    setEmojiselect(() => emojiObject.emoji);
-    setShowPicker(false);
-  }
   function elegirColor(color) {
     setColor(color.hex);
   }
-
   const {
     register,
     formState: { errors },
@@ -38,43 +32,32 @@ export function RegistrarCategorias({ onClose, dataSelect, accion }) {
   async function insertar(data) {
     if (accion === "Editar") {
       const p = {
+        id: dataSelect.id,
         descripcion: data.descripcion,
         color: currentColor,
-        icono: emojiselect,
-        id: dataSelect.id,
-        idusuario:datausuarios.id,
-        tipo: tipo,
+        id_empresa: dataempresa.id,
       };
-      try {
-        setEstadoproceso(true);
-        await editarCategoria(p);
-        setEstadoproceso(false);
-        onClose();
-      } catch (error) {}
+      setEstadoproceso(true);
+      await editarCategoria(p);
+      setEstadoproceso(false);
+      onClose();
     } else {
       const p = {
-        descripcion: data.descripcion,
-        color: currentColor,
-        icono: emojiselect,
-        idusuario: datausuarios.id,
-        tipo: tipo,
+        _descripcion: data.descripcion,
+        _color: currentColor,
+        _idempresa: dataempresa.id,
       };
-      try {
-        setEstadoproceso(true);
-        await insertarCategorias(p);
-        setEstadoproceso(false);
 
-        onClose();
-      } catch (error) {
-        alert("error ingresar Form");
-      }
+      setEstadoproceso(true);
+      await insertarCategorias(p);
+      setEstadoproceso(false);
+      onClose();
     }
   }
   useEffect(() => {
     if (accion === "Editar") {
-      setEmojiselect(dataSelect.icono);
       setColor(dataSelect.color);
-    } 
+    }
   }, []);
   return (
     <Container>
@@ -94,18 +77,26 @@ export function RegistrarCategorias({ onClose, dataSelect, accion }) {
             <span onClick={onClose}>x</span>
           </section>
         </div>
-
         <form className="formulario" onSubmit={handleSubmit(insertar)}>
           <section>
-            <div>
-              <InputText
-                defaultValue={dataSelect.descripcion}
-                register={register}
-                placeholder="Descripcion"
-                errors={errors}
-                style={{ textTransform: "capitalize" }}
-              />
-            </div>
+            <article>
+              <InputText icono={<v.iconoflechaderecha />}>
+                <input
+                className="form__field"
+                  defaultValue={dataSelect.descripcion}
+                  type="text"
+                  placeholder="categoria"
+                  {...register("descripcion", {
+                    required: true,
+                  })}
+                />
+ <label className="form__label">categoria</label>
+                {errors.descripcion?.type === "required" && (
+                  <p>Campo requerido</p>
+                )}
+              </InputText>
+            </article>
+
             <div className="colorContainer">
               <ContentTitle>
                 {<v.paletacolores />}
@@ -115,22 +106,7 @@ export function RegistrarCategorias({ onClose, dataSelect, accion }) {
                 <CirclePicker onChange={elegirColor} color={currentColor} />
               </div>
             </div>
-            <div>
-              <ContentTitle>
-                <input
-                readOnly={true}
-                  value={emojiselect}
-                  type="text"
-                  onClick={() => setShowPicker(!showPicker)}
-                ></input>
-                <span>icono</span>
-              </ContentTitle>
-              {showPicker && (
-                <ContainerEmojiPicker>
-                  <Emojipicker onEmojiClick={onEmojiClick} />
-                </ContainerEmojiPicker>
-              )}
-            </div>
+
             <div className="btnguardarContent">
               <Btnsave
                 icono={<v.iconoguardar />}

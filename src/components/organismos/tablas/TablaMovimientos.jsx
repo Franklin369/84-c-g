@@ -64,7 +64,7 @@ export function TablaMovimientos({
                 <tr key={item.id}>
                   <th scope="row">
                     <Situacion
-                      bgcolor={item.estado == "1" ? "#69e673" : "#b3b3b3"}
+                      $bgcolor={item.estado == "1" ? "#69e673" : "#b3b3b3"}
                     ></Situacion>
                   </th>
                   <td  data-title="Fecha" >{item.fecha}</td>
@@ -249,6 +249,6 @@ const Situacion = styled.div`
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background-color: ${(props) => props.bgcolor};
+    background-color: ${(props) => props.$bgcolor};
   }
 `;

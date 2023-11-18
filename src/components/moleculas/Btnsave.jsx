@@ -1,11 +1,17 @@
 import styled from "styled-components";
 import {Icono} from "../../index"
-export function Btnsave({ funcion, titulo, bgcolor, icono }) {
+export function Btnsave({ funcion, titulo, bgcolor, icono,url }) {
   return (
     <Container type="submit" $bgcolor={bgcolor}>
+   
      <Icono>{icono}</Icono>
+     
+
       <span className="btn" onClick={funcion}>
-        {titulo}
+        <a href={url} target="_blank">
+           {titulo}
+        </a>
+       
       </span>
     </Container>
   );
@@ -30,6 +36,10 @@ const Container = styled.button`
     transition: 0.2s;
     white-space: 1px;
     color: #000;
+    a{
+      text-decoration:none;
+      color: #000;
+    }
     cursor: pointer;
     &:hover{
       transform: translate(-0.05em, -0.05em);

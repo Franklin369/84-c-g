@@ -10,36 +10,28 @@ import {
   Login,
   SpinnerLoader,
   Fondo1,
+  UserAuth,
 } from "./index";
 import { useLocation } from "react-router-dom";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { ThemeProvider } from "styled-components";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { styled } from "styled-components";
 import { useQuery } from "@tanstack/react-query";
+import { useEmpresaStore } from "./store/EmpresaStore";
 export const ThemeContext = createContext(null);
 function App() {
-  const { mostrarUsuarios, datausuarios } = useUsuariosStore();
-
+  
+  const {  dataempresa} = useEmpresaStore();
   const { pathname } = useLocation();
-  // const [theme, setTheme] = useState("dark");
-  const theme = datausuarios?.tema === "0" ? "light" : "dark";
+   const [themeuse, setTheme] = useState("dark");
+  const theme = themeuse === "light" ? "light" : "dark";
   const themeStyle = theme === "light" ? Light : Dark;
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const { isLoading, error } = useQuery(["mostrar usuarios"], () =>
-    mostrarUsuarios()
-  );
-  if (isLoading) {
-    return <SpinnerLoader />;
-  }
-  if (error) {
-    return <h1>Error..</h1>;
-  }
-
+   
   return (
     <>
-      <ThemeContext.Provider value={{ theme }}>
+      <ThemeContext.Provider value={{ theme,setTheme }}>
         <ThemeProvider theme={themeStyle}>
           <AuthContextProvider>
             {pathname != "/login" ? (
@@ -102,6 +94,5 @@ const Containerbody = styled.div`
   @media ${Device.tablet} {
     grid-column: 2;
   }
-
 `;
 export default App;

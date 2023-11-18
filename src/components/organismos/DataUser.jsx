@@ -6,21 +6,28 @@ import {
   ListaMenuDesplegable,
   DesplegableUser,
   useAuthStore,
+  useUsuariosStore,
 } from "../../index";
+
 export function DataUser({ stateConfig }) {
+  const { mostrarUsuarios, datausuarios, idusuario, setiduser } =
+    useUsuariosStore();
+
   const { user } = UserAuth();
   const { signout } = useAuthStore();
   const funcionXtipo = async (p) => {
-   
     if (p.tipo === "cerrarsesion") {
-     
+      // queryClient.removeQueries();
+      // queryClient.resetQueries();
+      // queryClient.refetchQueries()
+      // setiduser();
       await signout();
     }
   };
   return (
     <Container onClick={stateConfig.setState}>
       <div className="imgContainer">
-        <img src={user.picture} />
+        <img src="https://i.ibb.co/kGYgRZ8/programador.png" />
       </div>
 
       <BtnCircular
@@ -33,18 +40,19 @@ export function DataUser({ stateConfig }) {
         translatex="-50px"
         translatey="-12px"
       />
-      <span className="nombre">{user.name}</span>
+      <span className="nombre">{user.email}</span>
       {stateConfig.state && (
         <ListaMenuDesplegable
           data={DesplegableUser}
           top="62px"
-          funcion={(p)=>funcionXtipo(p)}
+          funcion={(p) => funcionXtipo(p)}
         />
       )}
     </Container>
   );
 }
 const Container = styled.div`
+  z-index: 10;
   position: relative;
   top: 0;
   right: 0;

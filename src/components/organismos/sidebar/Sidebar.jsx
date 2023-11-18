@@ -1,12 +1,16 @@
 import styled from "styled-components";
 import {
-  v,
+  
   LinksArray,
   SecondarylinksArray,
   SidebarCard,
+  ToggleTema,
 } from "../../../index";
+import {v} from "../../../styles/variables"
 import { NavLink } from "react-router-dom";
+
 export function Sidebar({ state, setState }) {
+
   return (
     <Main $isopen={state.toString()}>
       <span className="Sidebarbutton" onClick={() => setState(!state)}>
@@ -17,7 +21,7 @@ export function Sidebar({ state, setState }) {
           <div className="imgcontent">
             <img src={v.logo} />
           </div>
-          <h2>Cerdyn</h2>
+          <h2>StockPRO</h2>
         </div>
         {LinksArray.map(({ icon, label, to }) => (
           <div
@@ -32,7 +36,7 @@ export function Sidebar({ state, setState }) {
               <span className={state ? "label_ver" : "label_oculto"}>
                 {label}
               </span>
-              {/* {state && <span>{label}</span>} */}
+              
             </NavLink>
           </div>
         ))}
@@ -50,10 +54,11 @@ export function Sidebar({ state, setState }) {
               <span className={state ? "label_ver" : "label_oculto"}>
                 {label}
               </span>
-              {/* {state && <span>{label}</span>} */}
+             
             </NavLink>
           </div>
         ))}
+        <ToggleTema/>
         <Divider />
         {state && <SidebarCard />}
       </Container>

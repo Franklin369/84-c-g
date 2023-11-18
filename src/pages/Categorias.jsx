@@ -1,34 +1,41 @@
-import styled from "styled-components";
-import {
-  CategoriasTemplate,
-  useCategoriasStore,
-  useOperaciones,
-  useUsuariosStore,
-  SpinnerLoader,
-  Lottieanimacion,
-} from "../index";
 import { useQuery } from "@tanstack/react-query";
-
+import { CategoriasProTemplate } from "../components/templates/CategoriasProTemplate";
+import { useCategoriasStore } from "../store/CategoriasStore";
+import { useEmpresaStore } from "../store/EmpresaStore";
+import { SpinnerLoader } from "../components/moleculas/SpinnerLoader";
+import { usePermisosStore, BloqueoPagina } from "../index";
 export function Categorias() {
-  const { tipo } = useOperaciones();
-  const { datacategoria, mostrarCategorias } = useCategoriasStore();
-  const { datausuarios } = useUsuariosStore();
-  const { isLoading, error } = useQuery(["mostrar categorias", tipo], () =>
-    mostrarCategorias({ idusuario: datausuarios.id, tipo: tipo })
+  const { datapermisos } = usePermisosStore();
+  const statePermiso = datapermisos.some((objeto) =>
+    objeto.modulos.nombre.includes("Categoria de productos")
   );
+  console.log(statePermiso);
+  if (!statePermiso) return <BloqueoPagina />;
+
+  const { mostrarCategorias, datacategorias, buscarCategorias, buscador } =
+    useCategoriasStore();
+  const { dataempresa } = useEmpresaStore();
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["mostrar categorias", dataempresa.id],
+    queryFn: () => mostrarCategorias({ idempresa: dataempresa.id }),
+    enabled: dataempresa.id != null,
+  });
+  const { data: buscar } = useQuery({
+    queryKey: ["buscar categorias", buscador],
+    queryFn: () =>
+      buscarCategorias({ descripcion: buscador, id_empresa: dataempresa.id }),
+    enabled: dataempresa.id != null,
+  });
+  //respuestas
   if (isLoading) {
     return <SpinnerLoader />;
   }
   if (error) {
-    return <h1>Error...</h1>;
+    return <span>Error...</span>;
   }
-
   return (
     <>
-      
-      <CategoriasTemplate data={datacategoria}>
-       
-      </CategoriasTemplate>
+      <CategoriasProTemplate data={datacategorias} />
     </>
   );
 }

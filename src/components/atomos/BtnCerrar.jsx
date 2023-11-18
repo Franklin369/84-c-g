@@ -9,6 +9,6 @@ const Container = styled.span`
   transition: all 0.2s;
   &:hover {
     color: ${() => v.colorselector};
-    transform: scale(1.2);
+    
   }
 `;

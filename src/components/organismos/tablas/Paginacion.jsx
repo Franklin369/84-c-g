@@ -2,37 +2,22 @@ import React, { useState } from "react";
 import { v } from "../../../styles/variables";
 import styled from "styled-components";
 import { useOperaciones } from "../../../index";
-export const Paginacion = ({ pagina, setPagina, maximo }) => {
+export const Paginacion = ({ table }) => {
   const { bgCategoria, colorCategoria } = useOperaciones();
-  const [input, setInput] = useState(1);
-
-  const nextPage = () => {
-    setInput(parseInt(input) + 1);
-    setPagina(parseInt(pagina) + 1);
-  };
-
-  const previousPage = () => {
-    setInput(parseInt(input) - 1);
-    setPagina(parseInt(pagina) - 1);
-  };
-  const inicio = () => {
-    setInput(1);
-    setPagina(1);
-  };
 
   return (
     <Container $bgCategoria={bgCategoria} $colorCategoria={colorCategoria}>
-      <button onClick={inicio}>
+      <button onClick={() => table.setPageIndex(0)}  disabled={!table.getCanPreviousPage()}>
         <span>{<v.iconotodos />}</span>
       </button>
-      <button disabled={pagina === 1 || pagina < 1} onClick={previousPage}>
+      <button disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
         <span className="iconoIzquierda">{<v.iconoflechaderecha />}</span>
       </button>
-      <span>{input}</span>
-      <p> de {Math.round(maximo)} </p>
+      <span>{table.getState().pagination.pageIndex + 1}</span>
+      <p> de {table.getPageCount()} </p>
       <button
-        disabled={pagina === Math.ceil(maximo) || pagina > Math.ceil(maximo)}
-        onClick={nextPage}
+        disabled={!table.getCanNextPage()}
+        onClick={() => table.nextPage()}
       >
         <span>{<v.iconoflechaderecha />}</span>
       </button>

@@ -1,20 +1,20 @@
 import styled from "styled-components";
 import {
   Header,
-  ContentFiltros,
-  Btndesplegable,
+
   useOperaciones,
-  ListaMenuDesplegable,
-  DataDesplegableTipo,
+
   Btnfiltro,
   v,
   TablaCategorias,
   RegistrarCategorias,
   Lottieanimacion,
+  Title,
 } from "../../index";
 import { useState } from "react";
 import vacioverde from "../../assets/vacioverde.json";
 import vaciorojo from "../../assets/vaciorojo.json";
+
 export function CategoriasTemplate({ data }) {
   const [openRegistro, SetopenRegistro] = useState(false);
   const [accion, setAccion] = useState("");
@@ -60,28 +60,8 @@ export function CategoriasTemplate({ data }) {
         <Header stateConfig={{ state: state, setState: openUser }} />
       </header>
 
-      <section className="tipo">
-        <ContentFiltros>
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <Btndesplegable
-              textcolor={colorCategoria}
-              bgcolor={bgCategoria}
-              text={tituloBtnDes}
-              funcion={openTipo}
-            />
-            {stateTipo && (
-              <ListaMenuDesplegable
-                data={DataDesplegableTipo}
-                top="112%"
-                funcion={(p) => cambiarTipo(p)}
-              />
-            )}
-          </div>
-        </ContentFiltros>
+      <section className="tipo" >
+    <Title>Categoria de productos</Title>
       </section>
       <section className="area2">
         <ContentFiltro>
@@ -113,10 +93,12 @@ export function CategoriasTemplate({ data }) {
   );
 }
 const Container = styled.div`
+
+
   min-height: 100vh;
   padding: 15px;
   width: 100%;
-  background: ${({ theme }) => theme.bgtotal};
+
   color: ${({ theme }) => theme.text};
   display: grid;
   grid-template:

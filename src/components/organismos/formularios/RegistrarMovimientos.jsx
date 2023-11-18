@@ -25,7 +25,7 @@ export function RegistrarMovimientos({ setState, state, dataSelect, accion }) {
   const [estado, setEstado] = useState(true);
   const [ignorar, setIgnorar] = useState(false);
   const [stateCategorias, setStateCategorias] = useState(false);
-
+  const fechaactual = new Date();
   const {
     register,
     formState: { errors },
@@ -104,7 +104,7 @@ export function RegistrarMovimientos({ setState, state, dataSelect, accion }) {
             <ContainerFecha>
               <label>Fecha:</label>
 
-              <input
+              <input defaultValue={fechaactual.toJSON().slice(0,10)}
                 type="date"
                 {...register("fecha", { required: true })}
               ></input>
