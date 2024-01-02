@@ -13,8 +13,7 @@ const Container = styled.div`
   min-height: 50px;
   border-radius: 50%;
   background: linear-gradient(145deg, #f0f0f0, #cacaca);
-box-shadow:  20px 20px 60px #bebebe,
-             -20px -20px 60px #ffffff;
+  box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
   color: ${(props) => props.$textcolor};
   display: flex;
   align-items: center;
@@ -31,7 +30,7 @@ box-shadow:  20px 20px 60px #bebebe,
     right: 0;
     display: flex;
     justify-content: center;
-    transition:0.2s;
+    transition: 0.2s;
     &:hover {
       transform: scale(1.3);
     }

@@ -12,7 +12,6 @@ export * from './components/moleculas/Btndesplegable';
 export * from './components/moleculas/Btnfiltro';
 export * from './components/moleculas/Btnsave';
 export * from './components/moleculas/CarddatosEmpresa';
-export * from './components/moleculas/Carousel';
 export * from './components/moleculas/InputBuscadorLista';
 export * from './components/moleculas/ItemsDesplegable';
 export * from './components/moleculas/ListaGenerica';

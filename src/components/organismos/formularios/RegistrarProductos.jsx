@@ -294,7 +294,6 @@ export function RegistrarProductos({ onClose, dataSelect, accion }) {
           </section>
           <div className="btnguardarContent">
             <Btnsave
-             
               icono={<v.iconoguardar />}
               titulo="Guardar"
               bgcolor="#EF552B"
